@@ -1,1 +1,103 @@
+Tip: Welcome to the Investigate a Dataset project! You will find tips in quoted sections like this to help organize your approach to your investigation. Once you complete this project, remove these Tip sections from your report before submission. First things first, you might want to double-click this Markdown cell and change the title so that it reflects your dataset and investigation.
 
+Project: Investigate a Dataset - [Dataset-name]
+Table of Contents
+Introduction
+Data Wrangling
+Exploratory Data Analysis
+Conclusions
+Introduction
+Dataset Description
+Tip: In this section of the report, provide a brief introduction to the dataset you've selected/downloaded for analysis. Read through the description available on the homepage-links present here. List all column names in each table, and their significance. In case of multiple tables, describe the relationship between tables.
+
+Question(s) for Analysis
+Tip: Clearly state one or more questions that you plan on exploring over the course of the report. You will address these questions in the data analysis and conclusion sections. Try to build your report around the analysis of at least one dependent variable and three independent variables. If you're not sure what questions to ask, then make sure you familiarize yourself with the dataset, its variables and the dataset context for ideas of what to explore.
+
+Tip: Once you start coding, use NumPy arrays, Pandas Series, and DataFrames where appropriate rather than Python lists and dictionaries. Also, use good coding practices, such as, define and use functions to avoid repetitive code. Use appropriate comments within the code cells, explanation in the mark-down cells, and meaningful variable names.
+
+# import packages
+import pandas as pd
+import matplotlib.pyplot as plt
+# Upgrade pandas to use dataframe.explode() function. 
+!pip install --upgrade pandas==0.25.0
+Data Wrangling
+Tip: In this section of the report, you will load in the data, check for cleanliness, and then trim and clean your dataset for analysis. Make sure that you document your data cleaning steps in mark-down cells precisely and justify your cleaning decisions.
+
+General Properties
+Tip: You should not perform too many operations in each cell. Create cells freely to explore your data. One option that you can take with this project is to do a lot of explorations in an initial notebook. These don't have to be organized, but make sure you use enough comments to understand the purpose of each code cell. Then, after you're done with your analysis, create a duplicate notebook where you will trim the excess and organize your steps so that you have a flowing, cohesive report.
+
+# load dataset and print its head
+df = pd.read_csv('tmdb-movies.csv')
+df.head()
+# describtion of data
+df.describe()
+# information about data
+df.info()
+# draw data columns for budget and vote_count
+plt.scatter(df['id'], df['budget'], color = 'blue')
+plt.scatter(df['id'], df['vote_count'], color = 'red')
+plt.xlabel("id")
+plt.ylabel("release year and budget")
+plt.title("Rate of change")
+plt.legend()
+def hist_plot_by(x, xlabel, ylabel, title):
+# A function to draw a histgram
+     ax = plt.subplot(1,1,1)
+     ax.hist(x)
+     ax.set_xlabel(xlabel)
+     ax.set_ylabel(ylabel)
+     ax.set_title(title)
+     ax.legend()
+     plt.show()
+# To see regression rate for 2 columns
+hist_plot_by(df['runtime'], 'numbers', 'runtime', 'runtime rate')
+Data Cleaning
+Tip: Make sure that you keep your reader informed on the steps that you are taking in your investigation. Follow every code cell, or every set of related code cells, with a markdown cell to describe to the reader what was found in the preceding cell(s). Try to make it so that the reader can then understand what they will be seeing in the following cell(s).
+
+# convert popularity to integer
+df["popularity"] = df["popularity"].astype(int)
+df["popularity"]
+# drop columns which are useless and print information of new data
+df = df.drop(['id', 'imdb_id', 'original_title', 'director'], axis = 1)
+df.info()
+# drop duplicates
+df.drop_duplicates(inplace = True)
+# inforamtion of new to new data
+df.info()
+Exploratory Data Analysis
+Tip: Now that you've trimmed and cleaned your data, you're ready to move on to exploration. Compute statistics and create visualizations with the goal of addressing the research questions that you posed in the Introduction section. You should compute the relevant statistics throughout the analysis when an inference is made about the data. Note that at least two or more kinds of plots should be created as part of the exploration, and you must compare and show trends in the varied visualizations.
+
+Tip: - Investigate the stated question(s) from multiple angles. It is recommended that you be systematic with your approach. Look at one variable at a time, and then follow it up by looking at relationships between variables. You should explore at least three variables in relation to the primary question. This can be an exploratory relationship between three variables of interest, or looking at how two independent variables relate to a single dependent variable of interest. Lastly, you should perform both single-variable (1d) and multiple-variable (2d) explorations.
+
+Which generes are most popular from year to year?
+# make variable and collect data by popularity sorted by generes
+genres_popularity = df.groupby(['genres'])['popularity'].mean()
+genres_popularity
+# To see rate of change of popularity by genres
+ax = plt.gca()
+ax.hist(genres_popularity)
+plt.xlabel('generes')
+plt.ylabel('popularity')
+plt.legend()
+plt.title('genres_popularity')
+Which is highest revenues ?
+# sort the revenue from highest
+revenue_biggest = df.sort_values(by=['revenue'], ascending = False)
+revenue_biggest.head(1)
+revenue_biggest['revenue'].hist()
+Conclusions
+In the first section I examined the popularity of Western movies over the decades. I made my analyzation based on the values of 'released_year and 'popularity. I could not find any correlations between the numbers and the assumptions but I found it by taking into account the numbers of released movies. After that I analyzed the ratings of the most and least expensive movies and I found out that the more expensive movies got higher votes than the cheaper ones.
+
+Limitations
+
+In the first section - although the literature details the phenomenon - I could not find any correlation between 'popularly' and 'release year. It would be good to know more about what is behind the value 'popularity and what popularity means here. Just to name a few... How was it calculated? Which criterias and values were measured exactly to get these numbers? It could be caculated based on ticket sales? Or based on audience appraisal? However, I found correlation between my assumptions and the number of released western movies but I would not name it causation without a much more detailed further analysis. In the second section, I made my calculations based on the values of budget adjustment to take the fluctuations into account, I found this really useful. But there were more missing values in the 'budget adj' column. During the cleaning process I replaced the missing values with the average, but it still can distort the result (for instance, there would be other movies among the most expensive 200 movies).
+
+Submitting your Project
+Tip: Before you submit your project, you need to create a .html or .pdf version of this notebook in the workspace here. To do that, run the code cell below. If it worked correctly, you should get a return code of 0, and you should see the generated .html file in the workspace directory (click on the orange Jupyter icon in the upper left).
+
+Tip: Alternatively, you can download this report as .html via the File > Download as submenu, and then manually upload it into the workspace directory by clicking on the orange Jupyter icon in the upper left, then using the Upload button.
+
+Tip: Once you've done this, you can submit your project by clicking on the "Submit Project" button in the lower right here. This will create and submit a zip file with this .ipynb doc and the .html or .pdf version you created. Congratulations!
+
+from subprocess import call
+call(['python', '-m', 'nbconvert', 'Investigate_a_Dataset.ipynb'])
